@@ -1,0 +1,26 @@
+name: Linting adn testing
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 2
+      matrix:
+        python-version: ['3.10']
+    steps:
+      - uses: actions/checkout@v3
+      - run: pipx install poetry
+      - uses: actions/setup-python@v4
+        with:
+          architecture: x64
+          python-version: ${{ matrix.python-version }}
+          cache: poetry
+      - name: Check syntax
+        run: |
+          pip install pre-commit
+          pre-commit run --all-files
