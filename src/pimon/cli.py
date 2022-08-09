@@ -4,6 +4,8 @@ from pathlib import Path
 
 import click
 
+from .db import engine, migrations
+
 
 class CommadError(Exception):  # noqa: D101
     pass
@@ -55,9 +57,12 @@ def init(ctx: click.Context):
             )
             ctx.exit(1)
         workspace.mkdir(parents=True)
+        engine.init(workspace / "db.sqlite")
+        migrations.sync_new_tables()
     except (CommadError, Exception) as err:
         click.echo(click.style(err, fg="red"))
         ctx.exit(1)
+    click.echo(click.style("Finish initialize.", fg="green"))
 
 
 def main():  # noqa: D103
