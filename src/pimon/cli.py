@@ -4,35 +4,12 @@ from pathlib import Path
 
 import click
 
-from .db import migrations
+from .app import console
+from .app.workspace import Workspace, WorkspaceError
 
 
 class CommadError(Exception):  # noqa: D101
     pass
-
-
-class Console:
-    """Click echo proc wrapper."""
-
-    @classmethod
-    def _out(cls, text: str, fg: str, nl: bool = True):  # noqa: D102
-        click.echo(click.style(text, fg=fg), nl=nl)
-
-    @classmethod
-    def echo(cls, msg: str, nl: bool = True):  # noqa: D102
-        click.echo(msg, nl=nl)
-
-    @classmethod
-    def info(cls, msg: str, nl: bool = True):  # noqa: D102
-        cls._out(msg, "green", nl=nl)
-
-    @classmethod
-    def warning(cls, msg: str, nl: bool = True):  # noqa: D102
-        cls._out(msg, "yellow", nl=nl)
-
-    @classmethod
-    def error(cls, msg: str, nl: bool = True):  # noqa: D102
-        cls._out(msg, "red", nl=nl)
 
 
 def resolve_workspace() -> Path:
@@ -70,25 +47,15 @@ def init(ctx: click.Context):
 
     Workspace folder must be not exists.
     """
-    Console.info("Hello pimon!!")
+    console.info("Hello pimon!!")
     try:
-        workspace: Path = ctx.obj["workspace"]
-        Console.echo(f"Target workspace is '{workspace}'")
-        if workspace.exists():
-            raise CommadError(
-                "Workspace is already exists. "
-                "Please specify other path or delete target"
-            )
-            ctx.exit(1)
-        workspace.mkdir(parents=True)
-        Console.echo("Create database ... ", nl=False)
-        db_path = workspace / "db.sqlite"
-        migrations.MigrationContext.new(db_path).migrate()
-        Console.info("OK")
-    except (CommadError, Exception) as err:
-        Console.error(err)
+        workspace = Workspace(root=ctx.obj["workspace"])
+        console.echo(f"Target workspace is '{workspace.root}'")
+        workspace.setup()
+    except (CommadError, WorkspaceError) as err:
+        console.error(err)
         ctx.exit(1)
-    Console.info("Finished!!")
+    console.info("Finished!!")
 
 
 @cli.command()
@@ -98,20 +65,16 @@ def upgrade(ctx: click.Context):
 
     Workspace folder must be exits.
     """
-    Console.info("Upgrading workspace.")
-    workspace: Path = ctx.obj["workspace"]
-    if not workspace.exists():
-        Console.error("Workspace is not exists")
-        ctx.exit(1)
+    console.info("Upgrading workspace.")
     try:
-        Console.echo("Migrate database ... ", nl=False)
-        db_path = workspace / "db.sqlite"
-        migrations.MigrationContext.new(db_path).migrate()
-        Console.info("OK")
+        workspace = Workspace(root=ctx.obj["workspace"])
+        console.echo(f"Target workspace is '{workspace.root}'")
+        workspace.verify()
+        workspace.migrate_db()
     except (CommadError, Exception) as err:
-        Console.error(err)
+        console.error(err)
         ctx.exit(1)
-    Console.info("Finished!!")
+    console.info("Finished!!")
 
 
 def main():  # noqa: D103
