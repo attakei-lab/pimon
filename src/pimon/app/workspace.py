@@ -5,6 +5,7 @@ from pathlib import Path
 
 from ..db.migrations import MigrationContext
 from . import console
+from .settings import create_new_settings
 
 
 class WorkspaceError(Exception):  # noqa: D101
@@ -16,6 +17,10 @@ class Workspace:
     """Application workspace for Pimon CLI."""
 
     root: Path
+
+    @cached_property
+    def settings_path(self) -> Path:  # noqa: D102
+        return self.root / "settings.json"
 
     @cached_property
     def db_path(self) -> Path:  # noqa: D102
@@ -32,11 +37,16 @@ class Workspace:
             raise WorkspaceError("To setup, workspace directory must be empty.")
         # Generate files
         self.migrate_db()
+        console.echo("Create settings ...", nl=False)
+        create_new_settings(self.settings_path)
+        console.info("OK")
 
     def verify(self):
         """Validate file structure of workspace."""
         if not self.db_path.exists():
             raise WorkspaceError("Database is not exists in workspace.")
+        if not self.settings_path.exists():
+            raise WorkspaceError("Settings is not exists in workspace.")
         return
 
     def migrate_db(self):
