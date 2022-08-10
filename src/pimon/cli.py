@@ -3,9 +3,8 @@ import sys
 from pathlib import Path
 
 import click
-import peewee
 
-from .db import engine, migrations
+from .db import migrations
 
 
 class CommadError(Exception):  # noqa: D101
@@ -58,9 +57,8 @@ def init(ctx: click.Context):
             )
             ctx.exit(1)
         workspace.mkdir(parents=True)
-        db = peewee.SqliteDatabase(workspace / "db.sqlite")
-        engine.initialize(db)
-        migrations.sync_new_tables()
+        db_path = workspace / "db.sqlite"
+        migrations.MigrationContext.new(db_path).migrate()
     except (CommadError, Exception) as err:
         click.echo(click.style(err, fg="red"))
         ctx.exit(1)

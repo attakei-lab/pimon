@@ -15,6 +15,7 @@ repos:
       - id: flake8
         args:
           - --max-line-length=88
+        exclude: src/pimon/db/migrations/.*_.*.py
   - repo: https://github.com/PyCQA/isort
     rev: 5.10.1
     hooks:
@@ -25,3 +26,4 @@ repos:
       - id: pydocstyle
         args: 
           - --ignore=D100,D203,D213,D400,D415
+        exclude: src/pimon/db/migrations/.*_.*.py
