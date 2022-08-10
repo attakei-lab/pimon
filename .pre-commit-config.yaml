@@ -24,6 +24,8 @@ repos:
     rev: 6.1.1
     hooks:
       - id: pydocstyle
+        additional_dependencies:
+          - toml
         args: 
           - --ignore=D100,D203,D213,D400,D415
         exclude: src/pimon/db/migrations/.*_.*.py
