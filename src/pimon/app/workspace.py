@@ -26,6 +26,10 @@ class Workspace:
     def db_path(self) -> Path:  # noqa: D102
         return self.root / "db.sqlite"
 
+    @cached_property
+    def logs_dir(self) -> Path:  # noqa: D102
+        return self.root / "logs"
+
     def setup(self):
         """Create new workspace."""
         # Validate root
@@ -40,6 +44,9 @@ class Workspace:
         console.echo("Create settings ...", nl=False)
         create_new_settings(self.settings_path)
         console.info("OK")
+        console.echo("Create log directory ...", nl=False)
+        self.logs_dir.mkdir()
+        console.info("OK")
 
     def verify(self):
         """Validate file structure of workspace."""
@@ -47,6 +54,8 @@ class Workspace:
             raise WorkspaceError("Database is not exists in workspace.")
         if not self.settings_path.exists():
             raise WorkspaceError("Settings is not exists in workspace.")
+        if not self.logs_dir.exists():
+            raise WorkspaceError("Log directory is not exists in workspace.")
         return
 
     def migrate_db(self):
