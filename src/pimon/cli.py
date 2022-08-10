@@ -77,5 +77,34 @@ def upgrade(ctx: click.Context):
     console.info("Finished!!")
 
 
+@cli.command("config:accounts:add")
+@click.pass_context
+def config_accounts_add(ctx: click.Context):
+    """Register new account settings.
+
+    If you set duplicated name, prompt override.
+    """
+    from .app.accounts import prompt_account_settings
+    from .app.settings import ApplicationSettings
+
+    console.info("Adding email account.")
+    try:
+        workspace = Workspace(root=ctx.obj["workspace"])
+        console.echo(f"Target workspace is '{workspace.root}'")
+        workspace.verify()
+        settings = ApplicationSettings.parse_file(workspace.settings_path)
+        name, account_settings = prompt_account_settings()
+        if name in settings.accounts:
+            ans = click.confirm("Name is duplicated. Do you override it ?")
+            if ans is False:
+                raise CommadError("Canceled.")
+        settings.accounts[name] = account_settings
+        workspace.settings_path.write_text(settings.json())
+    except (CommadError, Exception) as err:
+        console.error(err)
+        ctx.exit(1)
+    console.info("Finished!!")
+
+
 def main():  # noqa: D103
     cli()
