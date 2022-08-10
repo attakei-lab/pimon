@@ -5,6 +5,7 @@ from pathlib import Path
 import click
 
 from .app import console
+from .app.settings import ApplicationSettings
 from .app.workspace import Workspace, WorkspaceError
 
 
@@ -85,7 +86,6 @@ def config_accounts_add(ctx: click.Context):
     If you set duplicated name, prompt override.
     """
     from .app.accounts import prompt_account_settings
-    from .app.settings import ApplicationSettings
 
     console.info("Adding email account.")
     try:
@@ -101,6 +101,35 @@ def config_accounts_add(ctx: click.Context):
         settings.accounts[name] = account_settings
         workspace.settings_path.write_text(settings.json())
     except (CommadError, Exception) as err:
+        console.error(err)
+        ctx.exit(1)
+    console.info("Finished!!")
+
+
+@cli.command()
+@click.option(
+    "--name",
+    type=str,
+    default=None,
+    help="Account name in settings. if it is not set, fetch from all accounts",
+)
+@click.pass_context
+def fetch(ctx: click.Context, name: str):
+    """Fetch messages from IMAP servers registered in settings."""
+    from .app.usecases.fetch import Source, execute
+
+    console.info("Adding email account.")
+    try:
+        workspace = Workspace(root=ctx.obj["workspace"])
+        console.echo(f"Target workspace is '{workspace.root}'")
+        workspace.verify()
+        src = Source(
+            workspace=workspace,
+            settings=ApplicationSettings.parse_file(workspace.settings_path),
+            target=name,
+        )
+        execute(src)
+    except (CommadError, WorkspaceError) as err:
         console.error(err)
         ctx.exit(1)
     console.info("Finished!!")
