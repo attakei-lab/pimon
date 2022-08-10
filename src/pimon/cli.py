@@ -65,5 +65,27 @@ def init(ctx: click.Context):
     click.echo(click.style("Finish initialize.", fg="green"))
 
 
+@cli.command()
+@click.pass_context
+def upgrade(ctx: click.Context):
+    """Upgrade workspace.
+
+    Workspace folder must be exits.
+    """
+    workspace: Path = ctx.obj["workspace"]
+    if not workspace.exists():
+        click.echo(click.style("Workspace is not exists", fg="red"))
+        ctx.exit(1)
+    try:
+        click.echo("Migrate database ... ", nl=False)
+        db_path = workspace / "db.sqlite"
+        migrations.MigrationContext.new(db_path).migrate()
+        click.echo(click.style("OK.", fg="green"))
+    except (CommadError, Exception) as err:
+        click.echo(click.style(err, fg="red"))
+        ctx.exit(1)
+    click.echo(click.style("Finish upgrade.", fg="green"))
+
+
 def main():  # noqa: D103
     cli()
