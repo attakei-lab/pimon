@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 
 import click
+import peewee
 
 from .db import engine, migrations
 
@@ -57,7 +58,8 @@ def init(ctx: click.Context):
             )
             ctx.exit(1)
         workspace.mkdir(parents=True)
-        engine.init(workspace / "db.sqlite")
+        db = peewee.SqliteDatabase(workspace / "db.sqlite")
+        engine.initialize(db)
         migrations.sync_new_tables()
     except (CommadError, Exception) as err:
         click.echo(click.style(err, fg="red"))

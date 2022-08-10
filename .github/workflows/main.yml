@@ -24,3 +24,7 @@ jobs:
         run: |
           pip install pre-commit
           pre-commit run --all-files
+      - name: Run all testcases
+        run: |
+          poetry install
+          poetry run pytest
