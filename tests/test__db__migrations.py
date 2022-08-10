@@ -9,3 +9,4 @@ def test__work__sync_new_tables():  # noqa: D103
     engine.initialize(db)
     migrations.sync_new_tables()
     assert db.table_exists(entities.Migration._meta.name)
+    assert db.table_exists(entities.Message._meta.name)

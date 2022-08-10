@@ -13,6 +13,7 @@ def sync_new_tables():
     This command is creating all tables from ``pimon.db.entities``.
     And, pin revision into Migration schema.
     """
+    entities.Message.create_table(safe=True)
     entities.Migration.create_table(safe=True)
     entities.Migration.create(
         revision=entities.REVISION, name="sync_all_schema", apply_at=datetime.now()
