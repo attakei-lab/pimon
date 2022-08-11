@@ -116,7 +116,7 @@ def config_accounts_add(ctx: click.Context):
 @click.pass_context
 def fetch(ctx: click.Context, name: str):
     """Fetch messages from IMAP servers registered in settings."""
-    from .app.usecases.fetch import Source, execute
+    from .app.usecases.fetch_messages import Source, execute
 
     console.info("Adding email account.")
     try:
