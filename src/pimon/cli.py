@@ -92,14 +92,14 @@ def add_accounts(ctx: click.Context):
         workspace = Workspace(root=ctx.obj["workspace"])
         console.echo(f"Target workspace is '{workspace.root}'")
         workspace.verify()
-        settings = ApplicationSettings.parse_file(workspace.settings_path)
+        settings = ApplicationSettings.load(workspace.settings_path)
         name, account_settings = prompt_account_settings()
         if name in settings.accounts:
             ans = click.confirm("Name is duplicated. Do you override it ?")
             if ans is False:
                 raise CommadError("Canceled.")
         settings.accounts[name] = account_settings
-        workspace.settings_path.write_text(settings.json())
+        settings.save(workspace.settings_path)
     except (CommadError, Exception) as err:
         console.error(err)
         ctx.exit(1)
@@ -125,7 +125,7 @@ def fetch(ctx: click.Context, name: str):
         workspace.verify()
         src = Source(
             workspace=workspace,
-            settings=ApplicationSettings.parse_file(workspace.settings_path),
+            settings=ApplicationSettings.load(workspace.settings_path),
             target=name,
         )
         execute(src)
