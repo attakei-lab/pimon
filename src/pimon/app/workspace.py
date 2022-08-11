@@ -20,7 +20,7 @@ class Workspace:
 
     @cached_property
     def settings_path(self) -> Path:  # noqa: D102
-        return self.root / "settings.json"
+        return self.root / "settings.toml"
 
     @cached_property
     def db_path(self) -> Path:  # noqa: D102
