@@ -2,6 +2,10 @@ name: Linting adn testing
 
 on:
   push:
+    branches:
+      - '*'
+    tags-ignore:
+      - 'v*.*.*'
   pull_request:
   workflow_dispatch:
 

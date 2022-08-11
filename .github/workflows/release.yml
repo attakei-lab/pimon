@@ -35,9 +35,10 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: releases
+          path: dist/
       - id: target_files
         run: |
-          echo ::set-output name=man::pimon.1
+          echo ::set-output name=man_1::pimon.1
           echo ::set-output name=targz::$(basename $(ls dist/*tar.gz))
           echo ::set-output name=wheel::$(basename $(ls dist/*whl))
       - name: Create release on GitHub
@@ -75,6 +76,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/${{ steps.target_files.outputs.man }}
-          asset_name: ${{ steps.target_files.outputs.man }}
+          asset_path: dist/${{ steps.target_files.outputs.man_1 }}
+          asset_name: ${{ steps.target_files.outputs.man_1 }}
           asset_content_type: text/plain
