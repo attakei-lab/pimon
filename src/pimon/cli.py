@@ -78,9 +78,9 @@ def upgrade(ctx: click.Context):
     console.info("Finished!!")
 
 
-@cli.command("config:accounts:add")
+@cli.command("accounts:add")
 @click.pass_context
-def config_accounts_add(ctx: click.Context):
+def add_accounts(ctx: click.Context):
     """Register new account settings.
 
     If you set duplicated name, prompt override.
