@@ -39,3 +39,21 @@ jobs:
         run: |
           poetry install
           poetry run pytest
+  doc:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 2
+      matrix:
+        python-version: ['3.10']
+    steps:
+      - uses: actions/checkout@v3
+      - run: pipx install poetry
+      - uses: actions/setup-python@v4
+        with:
+          architecture: x64
+          python-version: ${{ matrix.python-version }}
+          cache: poetry
+      - name: Run all testcases
+        run: |
+          poetry install
+          poetry run make -C doc dirhtml
