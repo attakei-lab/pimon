@@ -21,14 +21,29 @@ class Source(BaseModel):
     target: Optional[str] = None
 
 
+class FetchResult(BaseModel):
+    """Context class for fetching per account."""
+
+    class Config:  # noqa: D106
+        arbitrary_types_allowed = True
+
+    name: str
+    added: int = 0
+    error: Optional[Exception] = None
+
+    def out_console(self) -> str:
+        """Output text for terminal environment."""
+        console.echo(f"Fetch from '{self.name}': ", nl=False)
+        if self.error:
+            console.error(f"FAILED - {self.error}")
+        else:
+            console.info(f"SUCCEED - {self.added} messages added")
+
+
 class Context(BaseModel):
     """Output context for this UseCase."""
 
-    new_messages: Dict[str, int] = Field(default_factory=dict)
-
-    def all_messages(self) -> int:
-        """Calc count of all new messages."""
-        return sum(self.new_messages.values())
+    accounts: Dict[str, FetchResult] = Field(default_factory=dict)
 
 
 def execute(src: Source) -> Context:
@@ -42,30 +57,32 @@ def execute(src: Source) -> Context:
     ctx = Context()
     engine.initialize(SqliteDatabase(src.workspace.db_path))
     for name in targets:
-        console.echo(f"Fetch from '{name}' ... ", nl=False)
         account = src.settings.accounts[name]
-        created = work_in_mailbox(name, account)
-        console.info(f"{created} messages added.")
-        ctx.new_messages[name] = created
+        result = work_in_mailbox(name, account)
+        result.out_console()
+        ctx.accounts[name] = result
 
     return ctx
 
 
-def work_in_mailbox(name: str, settings: AccountSettings) -> int:
+def work_in_mailbox(name: str, settings: AccountSettings) -> FetchResult:
     """Sub-proc per mailbox."""
-    cnt = 0
-    with MailBox(settings.host, settings.port).login(
-        settings.username, settings.password, settings.inbox
-    ) as mb:
-        for msg in mb.fetch(mark_seen=False, headers_only=True):
-            content = {
-                "account": name,
-                "uid": msg.uid,
-                "sender": msg.from_values.full,
-                "subject": msg.subject,
-                "received_at": parse_datestr(msg.date_str),
-            }
-            msg, created = Message.get_or_create(**content)
-            if created:
-                cnt += 1
-    return cnt
+    result = FetchResult(name=name)
+    try:
+        with MailBox(settings.host, settings.port).login(
+            settings.username, settings.password, settings.inbox
+        ) as mb:
+            for msg in mb.fetch(mark_seen=False, headers_only=True):
+                content = {
+                    "account": name,
+                    "uid": msg.uid,
+                    "sender": msg.from_values.full,
+                    "subject": msg.subject,
+                    "received_at": parse_datestr(msg.date_str),
+                }
+                msg, created = Message.get_or_create(**content)
+                if created:
+                    result.added += 1
+    except Exception as err:
+        result.error = err
+    return result
