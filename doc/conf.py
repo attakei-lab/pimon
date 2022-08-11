@@ -6,7 +6,7 @@ import pimon
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
-project = "Pimon"
+project = pimon.__name__
 copyright = "2022, Kazuya Takei"
 author = "Kazuya Takei"
 release = pimon.__version__
