@@ -39,7 +39,7 @@ class ApplicationSettings(BaseSettings):
     def load(cls, src_path: Path) -> "ApplicationSettings":
         """Load settings from TOML-file."""
         obj = tomli.loads(src_path.read_text())
-        return cls.from_orm(obj)
+        return cls(**obj)
 
     def save(self, dst: Path):
         """Save settings as TOML-file."""
