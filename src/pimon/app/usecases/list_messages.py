@@ -37,8 +37,8 @@ def execute(src: Source):
         ctx.account_max_length = max([len(msg.account), ctx.account_max_length])
         ctx.uid_max_length = max([len(str(msg.uid)), ctx.uid_max_length])
     message_length = (
-        ctx.line_size - ctx.account_max_length - ctx.uid_max_length - 2
-    ) // 2
+        (ctx.line_size - ctx.account_max_length - ctx.uid_max_length - 2) // 5 * 2
+    )
     for msg in ctx.messages:
         account = msg.account + " " * (ctx.account_max_length - len(msg.account) + 1)
         uid = str(msg.uid) + " " * (ctx.uid_max_length - len(str(msg.uid)) + 1)
