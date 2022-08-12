@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 
 from ...db import engine
 from ...db.entities import Message
-from .. import console
+from .. import console, models
 from ..settings import AccountSettings, ApplicationSettings
 from ..workspace import Workspace
 
@@ -73,14 +73,14 @@ def work_in_mailbox(name: str, settings: AccountSettings) -> FetchResult:
             settings.username, settings.password, settings.inbox
         ) as mb:
             for msg in mb.fetch(mark_seen=False, headers_only=True):
-                content = {
-                    "account": name,
-                    "uid": msg.uid,
-                    "sender": msg.from_values.full,
-                    "subject": msg.subject,
-                    "received_at": parse_datestr(msg.date_str),
-                }
-                msg, created = Message.get_or_create(**content)
+                model = models.Message(
+                    account=name,
+                    uid=msg.uid,
+                    sender=msg.from_values.full,
+                    subject=msg.subject,
+                    received_at=parse_datestr(msg.date_str),
+                )
+                msg, created = Message.get_or_create(**model.dict())
                 if created:
                     result.added += 1
     except Exception as err:
