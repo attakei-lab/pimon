@@ -143,5 +143,24 @@ def fetch(ctx: click.Context, name: str):
     console.info("Finished!!")
 
 
+@cli.command("list")
+@click.pass_context
+def list_messages(ctx: click.Context):
+    """Display list of fetched messages."""
+    from .app.usecases.list_messages import Source, execute
+
+    try:
+        workspace = Workspace(root=ctx.obj["workspace"])
+        workspace.verify()
+        src = Source(
+            workspace=workspace,
+            settings=ApplicationSettings.load(workspace.settings_path),
+        )
+        execute(src)
+    except (CommadError, WorkspaceError) as err:
+        console.error(err)
+        ctx.exit(1)
+
+
 def main():  # noqa: D103
     cli()
