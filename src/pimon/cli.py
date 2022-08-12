@@ -42,6 +42,14 @@ def cli(ctx: click.Context, workspace: Path = None):  # noqa: D103
 
 
 @cli.command()
+def version():
+    """Display version."""
+    from . import __version__
+
+    print(f"v{__version__}")
+
+
+@cli.command()
 @click.pass_context
 def init(ctx: click.Context):
     """Initialize workspace.
