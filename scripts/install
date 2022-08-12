@@ -1,0 +1,89 @@
+#!/usr/bin/env python
+"""Install-script for pimon into user-local environment.
+
+This works these procs.
+
+0. Prepare user-local folder and children.
+1. Find or create venv.
+2. Install pimon into venv.
+3. Set man file.
+"""
+import argparse
+import logging
+import subprocess
+import sys
+import venv
+from dataclasses import dataclass
+from functools import cached_property
+from pathlib import Path
+from urllib.request import urlopen
+
+parser = argparse.ArgumentParser()
+
+
+def resolve_user_local_dir() -> Path:
+    return Path.home() / ".local"
+
+
+@dataclass
+class PathInfo:
+    root: Path
+
+    @cached_property
+    def bin_dir(self) -> Path:
+        return self.root / "bin"
+
+    @cached_property
+    def app_dir(self) -> Path:
+        return self.root / "share" / "pimon"
+
+    @cached_property
+    def man_dir(self) -> Path:
+        return self.root / "man" / "man1"
+
+    @cached_property
+    def venv_dir(self) -> Path:
+        return self.app_dir / "venv"
+
+
+def main(args: argparse.Namespace) -> int:
+    path_info = PathInfo(root=resolve_user_local_dir())
+    logging.info("Create folders")
+    path_info.app_dir.mkdir(parents=True, exist_ok=True)
+    path_info.man_dir.mkdir(parents=True, exist_ok=True)
+    if not path_info.venv_dir.exists():
+        logging.info("Create virtualenv")
+        venv.create(path_info.venv_dir, with_pip=True)
+    logging.info("Install latest pimon")
+    subprocess.run(
+        [
+            str(path_info.venv_dir / "bin" / "pip"),
+            "install",
+            "--find-links=https://github.com/attakei-lab/pimon/releases",
+            "-U",
+            "pimon",
+        ]
+    )
+    result = subprocess.run(
+        [
+            str(path_info.venv_dir / "bin" / "pimon"),
+            "version",
+        ],
+        capture_output=True,
+    )
+    logging.info("Get man file of pimon")
+    if result.returncode != 0:
+        logging.error("Failed to check pimon version")
+        return 1
+    version = result.stdout.decode().strip()
+    resp = urlopen(
+        f"https://github.com/attakei-lab/pimon/releases/download/{version}/pimon.1"
+    )
+    (path_info.man_dir / "pimon.1").write_bytes(resp.read())
+    (path_info.bin_dir / "pimon").symlink_to(path_info.venv_dir / "bin" / "pimon")
+    return 0
+
+
+if __name__ == "__main__":
+    args = parser.parse_args()
+    sys.exit(main(args))

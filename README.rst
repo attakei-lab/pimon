@@ -12,7 +12,8 @@ Installation
 
 .. code-block:: console
 
-   pip install --find-links=https://github.com/attakei-lab/pimon/releases pimon
+   curl -sSL -o install.py https://raw.githubusercontent.com/attakei-lab/pimon/main/scripts/install
+   python install.py
    pimon init [--workspace=/PATH/TO/workspace]
 
 Usage
