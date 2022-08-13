@@ -162,5 +162,31 @@ def list_messages(ctx: click.Context):
         ctx.exit(1)
 
 
+@cli.command("archive")
+@click.argument("account", type=click.STRING)
+@click.argument("uid", type=click.INT)
+@click.pass_context
+def archive_messages(ctx: click.Context, account: str, uid: int):
+    """Display list of fetched messages."""
+    from .app.usecases.archive_messages import Source, execute
+
+    try:
+        workspace = Workspace(root=ctx.obj["workspace"])
+        workspace.verify()
+        src = Source(
+            workspace=workspace,
+            settings=ApplicationSettings.load(workspace.settings_path),
+            account=account,
+            uid=uid,
+        )
+        result = execute(src)
+    except (CommadError, WorkspaceError) as err:
+        console.error(err)
+        ctx.exit(1)
+    if result.err:
+        console.error(result.err)
+        ctx.exit(1)
+
+
 def main():  # noqa: D103
     cli()
