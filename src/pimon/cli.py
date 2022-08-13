@@ -162,13 +162,13 @@ def list_messages(ctx: click.Context):
         ctx.exit(1)
 
 
-@cli.command("archive")
+@cli.command("remove")
 @click.argument("account", type=click.STRING)
 @click.argument("uid", type=click.INT)
 @click.pass_context
-def archive_messages(ctx: click.Context, account: str, uid: int):
+def remove_messages(ctx: click.Context, account: str, uid: int):
     """Display list of fetched messages."""
-    from .app.usecases.archive_messages import Source, execute
+    from .app.usecases.remove_messages import Source, execute
 
     try:
         workspace = Workspace(root=ctx.obj["workspace"])

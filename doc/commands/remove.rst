@@ -1,5 +1,5 @@
-``pimon trash`` コマンド
-========================
+``pimon remove`` コマンド
+=========================
 
 概要
 ----
@@ -31,4 +31,4 @@ UID
 
 .. code-block:: console
 
-   pimon trash example 11111
+   pimon remove example 11111
