@@ -7,8 +7,8 @@ import tomli_w
 from pydantic import BaseSettings, Field
 
 
-class ArchiveSettings(BaseSettings):
-    """Settings to "Archive" behavoir for accounts."""
+class RemoveSettings(BaseSettings):
+    """Settings for behavoir to remove from INBOX in accounts."""
 
     proc: Literal["delete", "move"]
     """Command type for IMAP4 to action."""
@@ -24,7 +24,7 @@ class AccountSettings(BaseSettings):
     username: str
     password: str
     inbox: str = "INBOX"
-    archive: ArchiveSettings
+    remove: RemoveSettings
 
 
 class ApplicationSettings(BaseSettings):

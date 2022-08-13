@@ -43,9 +43,9 @@ def execute(src: Source) -> Result:
         with MailBox(account.host, account.port).login(
             account.username, account.password, account.inbox
         ) as mb:
-            if account.archive.proc == "move":
-                mb.move([str(src.uid)], account.archive.options["dist"])
-            elif account.archive.proc == "delete":
+            if account.remove.proc == "move":
+                mb.move([str(src.uid)], account.remove.options["dist"])
+            elif account.remove.proc == "delete":
                 mb.delete([str(src.uid)])
         msg.delete_instance()
     except Exception as err:
