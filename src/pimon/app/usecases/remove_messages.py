@@ -1,4 +1,4 @@
-"""'Use Case' to fetch messages from IMAP servers."""
+"""'Use Case' to remove messages from IMAP servers and database."""
 from dataclasses import dataclass
 from typing import Optional
 
@@ -8,6 +8,7 @@ from pydantic import BaseModel
 
 from ...db import engine
 from ...db.entities import Message
+from .. import console
 from ..settings import ApplicationSettings
 from ..workspace import Workspace
 
@@ -50,4 +51,5 @@ def execute(src: Source) -> Result:
         msg.delete_instance()
     except Exception as err:
         return Result(err=err)
+    console.warning(f"Message is not found (account={src.account} uid={src.uid})")
     return Result()

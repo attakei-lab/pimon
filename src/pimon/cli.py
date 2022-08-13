@@ -167,7 +167,7 @@ def list_messages(ctx: click.Context):
 @click.argument("uid", type=click.INT)
 @click.pass_context
 def remove_messages(ctx: click.Context, account: str, uid: int):
-    """Display list of fetched messages."""
+    """Remove messages."""
     from .app.usecases.remove_messages import Source, execute
 
     try:
