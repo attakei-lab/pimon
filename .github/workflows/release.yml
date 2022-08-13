@@ -23,7 +23,7 @@ jobs:
       - name: Build man
         run: |
           poetry run make -C doc man
-          cp doc/_build/man/pimon.* dist/
+          zip -j -r dist/manuals.zip doc/_build/man/
       - uses: actions/upload-artifact@v3
         with:
           name: releases
@@ -38,7 +38,7 @@ jobs:
           path: dist/
       - id: target_files
         run: |
-          echo ::set-output name=man_1::pimon.1
+          echo ::set-output name=man_1::manuals.zip
           echo ::set-output name=targz::$(basename $(ls dist/*tar.gz))
           echo ::set-output name=wheel::$(basename $(ls dist/*whl))
       - name: Create release on GitHub
@@ -78,4 +78,4 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: dist/${{ steps.target_files.outputs.man_1 }}
           asset_name: ${{ steps.target_files.outputs.man_1 }}
-          asset_content_type: text/plain
+          asset_content_type: application/zip
