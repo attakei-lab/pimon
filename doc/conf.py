@@ -2,6 +2,8 @@
 #
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
+from pathlib import Path
+
 import pimon
 
 # -- Project information -----------------------------------------------------
@@ -22,3 +24,16 @@ language = "ja"
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 html_theme = "bizstyle"
 html_static_path = ["_static"]
+
+# -- Options for Manual page output
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-manual-page-output
+man_pages = [
+    (
+        f"commands/{src.stem}",
+        f"pimon-{src.stem}",
+        "%s %s" % (project, release),
+        [author],
+        1,
+    )
+    for src in Path(__file__).parent.glob("commands/*.rst")
+]
