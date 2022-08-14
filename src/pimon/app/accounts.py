@@ -19,7 +19,7 @@ def prompt_account_settings() -> Tuple[str, AccountSettings]:
         "Archive process", type=click.Choice(["delete", "move"]), show_choices=True
     )
     archive_move_to = (
-        click.prompt("Move to rchive", type=str) if archive_proc == "move" else None
+        click.prompt("Move to archive", type=str) if archive_proc == "move" else None
     )
 
     # Generate

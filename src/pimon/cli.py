@@ -126,7 +126,7 @@ def fetch(ctx: click.Context, name: str):
     """Fetch messages from IMAP servers registered in settings."""
     from .app.usecases.fetch_messages import Source, execute
 
-    console.info("Adding email account.")
+    console.info("Fetching emails from accounts.")
     try:
         workspace = Workspace(root=ctx.obj["workspace"])
         console.echo(f"Target workspace is '{workspace.root}'")
