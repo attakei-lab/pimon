@@ -30,7 +30,7 @@ html_static_path = ["_static"]
 man_pages = [
     (
         f"commands/{src.stem}",
-        f"pimon-{src.stem}",
+        src.stem,
         "%s %s" % (project, release),
         [author],
         1,

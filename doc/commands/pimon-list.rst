@@ -12,7 +12,7 @@
 -ws, --workspace
   (任意)対象となるワークスペース。
 
-  もし指定がない場合は、次のように決定されます。また、 :doc:`./init` で初期化済みである必要があります。
+  もし指定がない場合は、次のように決定されます。また、 :doc:`./pimon-init` で初期化済みである必要があります。
 
   - Linuxの場合は、 ``$HOME/.config/pimon``
 
@@ -23,10 +23,10 @@ OSデフォルトのワークスペースで運用している場合。
 
 .. code-block:: console
 
-   pimon upgrade
+   pimon list
 
 特定フォルダをワークスペースとして運用している場合。
 
 .. code-block:: console
 
-   pimon upgrade --workspace=/PATH/TO/WORKSPACE
+   pimon list --workspace=/PATH/TO/WORKSPACE

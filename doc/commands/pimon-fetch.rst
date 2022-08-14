@@ -12,7 +12,7 @@ pimonで管理されているアカウントごとにIMAPサーバーへ接続�
 -ws, --workspace
   (任意)対象となるワークスペース。
 
-  もし指定がない場合は、次のように決定されます。また、 :doc:`./init` で初期化済みである必要があります。
+  もし指定がない場合は、次のように決定されます。また、 :doc:`./pimon-init` で初期化済みである必要があります。
 
   - Linuxの場合は、 ``$HOME/.config/pimon``
 
@@ -40,4 +40,4 @@ pimonで管理されているアカウントごとにIMAPサーバーへ接続�
 
 .. code-block:: console
 
-   pimon init --workspace=/PATH/TO/WORKSPACE
+   pimon fetch --workspace=/PATH/TO/WORKSPACE
