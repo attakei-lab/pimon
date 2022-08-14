@@ -12,11 +12,13 @@ import argparse
 import logging
 import subprocess
 import sys
+import tempfile
 import venv
 from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path
 from urllib.request import urlopen
+from zipfile import ZipFile
 
 parser = argparse.ArgumentParser()
 
@@ -39,7 +41,7 @@ class PathInfo:
 
     @cached_property
     def man_dir(self) -> Path:
-        return self.root / "man" / "man1"
+        return self.root / "share" / "man" / "man1"
 
     @cached_property
     def venv_dir(self) -> Path:
@@ -77,10 +79,14 @@ def main(args: argparse.Namespace) -> int:
         return 1
     version = result.stdout.decode().strip()
     resp = urlopen(
-        f"https://github.com/attakei-lab/pimon/releases/download/{version}/pimon.1"
+        f"https://github.com/attakei-lab/pimon/releases/download/{version}/manuals.zip"
     )
-    (path_info.man_dir / "pimon.1").write_bytes(resp.read())
-    (path_info.bin_dir / "pimon").symlink_to(path_info.venv_dir / "bin" / "pimon")
+    archive = Path(tempfile.mktemp())
+    archive.write_bytes(resp.read())
+    with ZipFile(archive) as zf:
+        zf.extractall(path_info.man_dir)
+    if not (path_info.bin_dir / "pimon").exists():
+        (path_info.bin_dir / "pimon").symlink_to(path_info.venv_dir / "bin" / "pimon")
     return 0
 
 
