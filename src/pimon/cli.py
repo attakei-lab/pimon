@@ -86,7 +86,7 @@ def upgrade(ctx: click.Context):
     console.info("Finished!!")
 
 
-@cli.command("accounts:add")
+@cli.command("add")
 @click.pass_context
 def add_accounts(ctx: click.Context):
     """Register new account settings.
