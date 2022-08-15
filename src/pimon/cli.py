@@ -20,6 +20,21 @@ def resolve_workspace() -> Path:
     raise Exception(f"{sys.platform} is not supported now")
 
 
+def use_workspace(ctx: click.Context) -> Workspace:
+    """Create and verify workspace.
+
+    :returns: Workspace object (it is verified)
+    """
+    workspace = Workspace(root=ctx.obj["workspace"])
+    console.echo(f"Target workspace is '{workspace.root}'")
+    try:
+        workspace.verify()
+    except WorkspaceError as err:
+        console.error(err)
+        ctx.exit(1)
+    return workspace
+
+
 @click.group()
 @click.option(
     "-ws",
@@ -75,10 +90,8 @@ def upgrade(ctx: click.Context):
     Workspace folder must be exits.
     """
     console.info("Upgrading workspace.")
+    workspace = use_workspace(ctx)
     try:
-        workspace = Workspace(root=ctx.obj["workspace"])
-        console.echo(f"Target workspace is '{workspace.root}'")
-        workspace.verify()
         workspace.migrate_db()
     except (CommadError, Exception) as err:
         console.error(err)
@@ -96,10 +109,8 @@ def add_accounts(ctx: click.Context):
     from .app.accounts import prompt_account_settings
 
     console.info("Adding email account.")
+    workspace = use_workspace(ctx)
     try:
-        workspace = Workspace(root=ctx.obj["workspace"])
-        console.echo(f"Target workspace is '{workspace.root}'")
-        workspace.verify()
         settings = ApplicationSettings.load(workspace.settings_path)
         name, account_settings = prompt_account_settings()
         if name in settings.accounts:
@@ -127,10 +138,8 @@ def fetch(ctx: click.Context, name: str):
     from .app.usecases.fetch_messages import Source, execute
 
     console.info("Fetching emails from accounts.")
+    workspace = use_workspace(ctx)
     try:
-        workspace = Workspace(root=ctx.obj["workspace"])
-        console.echo(f"Target workspace is '{workspace.root}'")
-        workspace.verify()
         src = Source(
             workspace=workspace,
             settings=ApplicationSettings.load(workspace.settings_path),
@@ -149,9 +158,8 @@ def list_messages(ctx: click.Context):
     """Display list of fetched messages."""
     from .app.usecases.list_messages import Source, execute
 
+    workspace = use_workspace(ctx)
     try:
-        workspace = Workspace(root=ctx.obj["workspace"])
-        workspace.verify()
         src = Source(
             workspace=workspace,
             settings=ApplicationSettings.load(workspace.settings_path),
@@ -170,9 +178,8 @@ def remove_messages(ctx: click.Context, account: str, uid: int):
     """Remove messages."""
     from .app.usecases.remove_messages import Source, execute
 
+    workspace = use_workspace(ctx)
     try:
-        workspace = Workspace(root=ctx.obj["workspace"])
-        workspace.verify()
         src = Source(
             workspace=workspace,
             settings=ApplicationSettings.load(workspace.settings_path),
