@@ -4,20 +4,17 @@ from typing import Optional
 
 from imap_tools import MailBox
 from peewee import SqliteDatabase
-from pydantic import BaseModel
 
 from ...db import engine
 from ...db.entities import Message
 from .. import console
-from ..settings import ApplicationSettings
-from ..workspace import Workspace
+from . import BaseSource
 
 
-class Source(BaseModel):
+@dataclass
+class Source(BaseSource):
     """Input for this UseCase."""
 
-    settings: ApplicationSettings
-    workspace: Workspace
     account: str
     uid: int
 

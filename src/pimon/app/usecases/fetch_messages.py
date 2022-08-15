@@ -1,4 +1,5 @@
 """'Use Case' to fetch messages from IMAP servers."""
+from dataclasses import dataclass
 from typing import Dict, Optional
 
 from dateutil.parser import parse as parse_datestr
@@ -9,15 +10,14 @@ from pydantic import BaseModel, Field
 from ...db import engine
 from ...db.entities import Message
 from .. import console, models
-from ..settings import AccountSettings, ApplicationSettings
-from ..workspace import Workspace
+from ..settings import AccountSettings
+from . import BaseSource
 
 
-class Source(BaseModel):
+@dataclass
+class Source(BaseSource):
     """Input for this UseCase."""
 
-    settings: ApplicationSettings
-    workspace: Workspace
     target: Optional[str] = None
 
 

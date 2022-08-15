@@ -4,20 +4,16 @@ from dataclasses import dataclass, field
 from typing import List
 
 from peewee import SqliteDatabase
-from pydantic import BaseModel
 
 from ...db import engine
 from ...db.entities import Message
 from .. import console
-from ..settings import ApplicationSettings
-from ..workspace import Workspace
+from . import BaseSource
 
 SUBJECT_MAX_LENGTH = 50
 
 
-class Source(BaseModel):  # noqa: D101
-    settings: ApplicationSettings
-    workspace: Workspace
+Source = BaseSource
 
 
 @dataclass
