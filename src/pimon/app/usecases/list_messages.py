@@ -5,9 +5,9 @@ from typing import List
 
 from peewee import SqliteDatabase
 
+from ... import console
 from ...db import engine
 from ...db.entities import Message
-from .. import console
 from . import BaseSource
 
 SUBJECT_MAX_LENGTH = 50

@@ -4,9 +4,9 @@ from pathlib import Path
 
 import click
 
-from .app import console
-from .app.settings import ApplicationSettings
-from .app.workspace import Workspace, WorkspaceError
+from . import console
+from .settings import ApplicationSettings
+from .workspace import Workspace, WorkspaceError
 
 
 class CommadError(Exception):  # noqa: D101

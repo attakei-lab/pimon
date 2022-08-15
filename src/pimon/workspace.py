@@ -3,9 +3,9 @@ from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path
 
+from .. import console
 from ..db.migrations import MigrationContext
-from . import console
-from .settings import create_new_settings
+from ..settings import create_new_settings
 
 
 class WorkspaceError(Exception):  # noqa: D101

@@ -5,9 +5,9 @@ from typing import Optional
 from imap_tools import MailBox
 from peewee import SqliteDatabase
 
+from ... import console
 from ...db import engine
 from ...db.entities import Message
-from .. import console
 from . import BaseSource
 
 

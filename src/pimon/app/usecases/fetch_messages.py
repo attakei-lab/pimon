@@ -7,10 +7,11 @@ from imap_tools import MailBox
 from peewee import SqliteDatabase
 from pydantic import BaseModel, Field
 
+from ... import console
 from ...db import engine
 from ...db.entities import Message
-from .. import console, models
-from ..settings import AccountSettings
+from ...settings import AccountSettings
+from .. import models
 from . import BaseSource
 
 

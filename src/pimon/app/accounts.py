@@ -3,7 +3,7 @@ from typing import Tuple
 
 import click
 
-from .settings import AccountSettings, ArchiveSettings
+from ..settings import AccountSettings, RemoveSettings
 
 
 def prompt_account_settings() -> Tuple[str, AccountSettings]:
@@ -15,23 +15,23 @@ def prompt_account_settings() -> Tuple[str, AccountSettings]:
     username = click.prompt("Username", type=str)
     password = click.prompt("Password", type=str, hide_input=True)
     inbox = click.prompt("Inbox name", type=str, default="INBOX")
-    archive_proc = click.prompt(
+    remove_proc = click.prompt(
         "Archive process", type=click.Choice(["delete", "move"]), show_choices=True
     )
-    archive_move_to = (
-        click.prompt("Move to archive", type=str) if archive_proc == "move" else None
+    remove_move_to = (
+        click.prompt("Move to remove", type=str) if remove_proc == "move" else None
     )
 
     # Generate
-    archive = ArchiveSettings(proc=archive_proc)
-    if archive.proc == "move":
-        archive.options["dist"] = archive_move_to
+    remove = RemoveSettings(proc=remove_proc)
+    if remove.proc == "move":
+        remove.options["dist"] = remove_move_to
     settings = AccountSettings(
         host=host,
         port=port,
         username=username,
         password=password,
         inbox=inbox,
-        archive=archive,
+        remove=remove,
     )
     return name, settings
